@@ -4,7 +4,7 @@ bssid_area="xx:xx:xx"
 scanning_interface="wlan0"
 #####################################
 
-from wifi import Cell, Scheme
+from wifi import Cell
 import datetime
 import time
 import requests
