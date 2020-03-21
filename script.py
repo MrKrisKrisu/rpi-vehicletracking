@@ -10,8 +10,13 @@ import time
 import requests
 
 found = []
+i = 0
 
 while True:
+        i += 1
+        if i > 240:
+                found = []
+                i = 0
         try:
                 print(datetime.datetime.now().strftime('%Y-%m-%d_%H%M%S') + ": Scan...")
                 cells = Cell.all(scanning_interface)
