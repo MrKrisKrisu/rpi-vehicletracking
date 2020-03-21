@@ -14,7 +14,7 @@ i = 0
 
 while True:
         i += 1
-        if i > 240:
+        if (i > 240):
                 found = []
                 i = 0
         try:
@@ -25,7 +25,17 @@ while True:
                                 print(datetime.datetime.now().strftime('%Y-%m-%d_%H%M%S') + ": " + cell.address + " " + cell.ssid)
                                 found.append(cell.address)
                                 if bssid_area in cell.address:
-                                        response = requests.get('https://' + core_instance + '/pi-scan/?bssid=' + cell.address)
+                                        response = requests.post('https://' + core_instance + '/api/scan', data = {
+                                                'vehicle_id': '-1',
+                                                'bssid': cell.address,
+                                                'ssid': cell.ssid,
+                                                'signal': cell.signal,
+                                                'quality': cell.quality,
+                                                'frequency': cell.frequency,
+                                                'bitrates': cell.bitrates,
+                                                'encrypted': cell.encrypted,
+                                                'channel': cell.channel
+                                        })
                                         print(response.text)
                                 else:
                                         print("*** Netzwerk nicht in Lokalisierungsbereich")
