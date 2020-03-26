@@ -26,7 +26,6 @@ while True:
                                 found.append(cell.address)
                                 if bssid_area in cell.address:
                                         response = requests.post('https://' + core_instance + '/api/scan', data = {
-                                                'vehicle_id': '-1',
                                                 'bssid': cell.address,
                                                 'ssid': cell.ssid,
                                                 'signal': cell.signal,
