@@ -16,13 +16,13 @@ i = 0
 token = " "
 
 def init():
-	if os.path.isfile('/opt/public_transport_tracking/device_key'):
+	if os.path.isfile('/opt/rpi-vehicletracking/device_key'):
 		f = open('device_key', 'r')
 		token = f.readline()
 		f.close()
 		return token
 	else:
-		f = open('/opt/public_transport_tracking/device_key', "w+")
+		f = open('/opt/rpi-vehicletracking/device_key', "w+")
 		reqToken = requests.post('https://' + core_instance + '/api/scan/device/registernew').text
 		token = reqToken
 		f.write(token)
