@@ -8,13 +8,32 @@ from wifi import Cell
 import datetime
 import time
 import requests
+import os
+import sys
 
 found = []
 i = 0
+token = " "
+
+def init():
+	if os.path.isfile('/opt/public_transport_tracking/device_key'):
+		f = open('device_key', 'r')
+		token = f.readline()
+		f.close()
+		return token
+	else:
+		f = open('/opt/public_transport_tracking/device_key', "w+")
+		reqToken = requests.post('https://' + core_instance + '/api/scan/device/registernew').text
+		token = reqToken
+		f.write(token)
+		f.close()
+		return token
+
+token = init()
 
 while True:
         i += 1
-        if (i > 240):
+        if (i > 60 * 20):
                 found = []
                 i = 0
         try:
@@ -34,7 +53,7 @@ while True:
                                                 'bitrates': cell.bitrates,
                                                 'encrypted': cell.encrypted,
                                                 'channel': cell.channel
-                                        })
+                                        }, headers={'X-Api-Token': token})
                                         print(response.text)
                                 else:
                                         print("*** Netzwerk nicht in Lokalisierungsbereich")
