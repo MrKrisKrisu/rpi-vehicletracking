@@ -18,9 +18,17 @@ scanning_interface = config['SCAN']['wifi_interface']
 token = config['SERVER']['token']
 
 
-def log(thread, message):
-    if verbose == "true":
+def log(thread, message, force=False):
+    if verbose == "true" or force:
         print(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + " [" + thread + "]: " + message)
+
+
+log("Main", "Starting script...", True)
+log("Main", "____________________________________________", True)
+log("Main", "Scanning interface " + scanning_interface, True)
+log("Main", "Pushing to Host " + core_instance, True)
+log("Main", "Logging is active? -> " + verbose, True)
+log("Main", "____________________________________________", True)
 
 
 def saveThread(q):
@@ -33,7 +41,7 @@ def saveThread(q):
                                          headers={'Authentication': token})
                 log("SaveScan", response.text)
             except Exception:
-                print("Error on save. Retry.")
+                log("SaveThread", "Error on save. Retry.", True)
                 q.put(uploadData)
 
 
@@ -80,5 +88,5 @@ while True:
         qHandle.put(cells)
         time.sleep(0.2)
     except Exception as e:
-        print(e)
+        log("Main", "Error: " + str(e), True)
         time.sleep(0.1)
