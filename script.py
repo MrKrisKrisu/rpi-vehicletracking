@@ -6,6 +6,7 @@ import threading
 import time
 import configparser
 import requests
+import socket
 from wifi import Cell
 
 config = configparser.ConfigParser()
@@ -33,19 +34,38 @@ log("Main", "Logging is active? -> " + verbose, True)
 log("Main", "____________________________________________", True)
 
 
+def internet(host="8.8.8.8", port=53, timeout=3):
+    """
+    Host: 8.8.8.8 (google-public-dns-a.google.com)
+    OpenPort: 53/tcp
+    Service: domain (DNS/TCP)
+    """
+    try:
+        socket.setdefaulttimeout(timeout)
+        socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
+        return True
+    except socket.error as ex:
+        print(ex)
+        return False
+
+
 def saveThread(q):
     time.sleep(5)
     while True:
         log("SaveThread", str(q.qsize()) + " Uploads pending...")
-        uploadData = q.get()
-        if len(uploadData) > 0:
-            try:
-                response = requests.post('https://' + core_instance + '/api/v1/scan', json=uploadData,
-                                         headers={'Authentication': token})
-                log("SaveScan", response.text)
-            except Exception:
-                log("SaveThread", "Error on save. Retry.", True)
-                q.put(uploadData)
+        if internet():
+            uploadData = q.get()
+            if len(uploadData) > 0:
+                try:
+                    response = requests.post('https://' + core_instance + '/api/v1/scan', json=uploadData,
+                                             headers={'Authentication': token})
+                    log("SaveScan", response.text)
+                except Exception:
+                    log("SaveThread", "Error on save. Retry.", True)
+                    q.put(uploadData)
+                time.sleep(0.5)
+        else:
+            time.sleep(5)
 
 
 def handleScan(qHandle, qSave):
