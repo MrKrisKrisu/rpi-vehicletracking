@@ -16,6 +16,7 @@ verbose = config['SCRIPT']['verbose']
 core_instance = config['SERVER']['hostname']
 scanning_interface = config['SCAN']['wifi_interface']
 token = config['SERVER']['token']
+scan_interval = float(config['SCAN']['scan_interval'])
 
 
 def log(thread, message, force=False):
@@ -26,6 +27,7 @@ def log(thread, message, force=False):
 log("Main", "Starting script...", True)
 log("Main", "____________________________________________", True)
 log("Main", "Scanning interface " + scanning_interface, True)
+log("Main", "Scanning every " + str(scan_interval) + " seconds", True)
 log("Main", "Pushing to Host " + core_instance, True)
 log("Main", "Logging is active? -> " + verbose, True)
 log("Main", "____________________________________________", True)
@@ -51,6 +53,7 @@ def handleScan(qHandle, qSave):
         uploadData = []
         for cell in cells:
             if cell.address not in found:
+                log("ScanThread", "Found new network " + cell.address + " / " + cell.ssid)
                 found.append(cell.address)
                 uploadData.append({
                     'bssid': cell.address,
@@ -86,7 +89,7 @@ while True:
         cells = Cell.all(scanning_interface)
         log("Main", "Scan... (" + str(qHandle.qsize()) + " Scans zu verarbeiten, )")
         qHandle.put(cells)
-        time.sleep(0.2)
+        time.sleep(scan_interval)
     except Exception as e:
         log("Main", "Error: " + str(e), True)
         time.sleep(0.1)
