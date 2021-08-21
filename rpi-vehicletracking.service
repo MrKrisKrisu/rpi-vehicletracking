@@ -1,0 +1,15 @@
+[Unit]
+Description=Vehicletracking Script
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=on-failure
+RestartSec=5s
+User=root
+WorkingDirectory=/opt/rpi-vehicletracking
+ExecStart=/usr/bin/python3 /opt/rpi-vehicletracking/script.py
+
+[Install]
+WantedBy=multi-user.target
