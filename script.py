@@ -36,6 +36,7 @@ log("Main", "____________________________________________", True)
 def saveThread(q):
     time.sleep(5)
     while True:
+        log("SaveThread", str(q.qsize()) + " Uploads pending...")
         uploadData = q.get()
         if len(uploadData) > 0:
             try:
@@ -86,8 +87,8 @@ while True:
         i = 1
         found = []
     try:
+        log("Main", "Scan...")
         cells = Cell.all(scanning_interface)
-        log("Main", "Scan... (" + str(qHandle.qsize()) + " Scans zu verarbeiten, )")
         qHandle.put(cells)
         time.sleep(scan_interval)
     except Exception as e:
