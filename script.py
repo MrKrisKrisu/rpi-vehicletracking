@@ -4,27 +4,28 @@ import datetime
 import queue
 import threading
 import time
-
+import configparser
 import requests
 from wifi import Cell
 
+config = configparser.ConfigParser()
+config.sections()
+config.read('config.ini')
+
 ############## CONFIG ###############
-core_instance = "xxx.de"
+verbose = config['SCRIPT']['verbose']
+core_instance = config['SERVER']['hostname']
 bssid_area = []
-scanning_interface = "wlan0"
-token = ""
+scanning_interface = config['SCAN']['wifi_interface']
+token = config['SERVER']['token']
 telegram_token = "bot123:xxx"
 telegram_chat_id = ""
 scanner_name = ""
 #####################################
 
-
-def message(message):
-    try:
-        requests.post('https://api.telegram.org/' + telegram_token + '/sendMessage',
-                      json={"chat_id": telegram_chat_id, 'text': message, 'parse_mode': 'HTML'})
-    except Exception as e:
-        print("Fehler beim Senden der Telegram-Nachricht")
+if verbose == "true":
+    print("Jaaaa")
+print(verbose)
 
 
 def saveThread(q):
@@ -36,23 +37,7 @@ def saveThread(q):
                 response = requests.post('https://' + core_instance + '/api/v1/scan', json=uploadData,
                                          headers={'Authentication': token})
                 print(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + " [SaveScan]: " + response.text)
-                json = response.json()
-                if json['data']['verified']:
-                    messageList = ""
-                    for vehicle in json['data']['verified']:
-                        messageList += "\r\n"
-                        messageList += str(vehicle['vehicle']) + "\r\n"
-                        messageList += "<i>" + str(vehicle['company']) + "</i>\r\n"
-                        messageList += "---------------";
-                    if messageList != "":
-                        message("<b><i>[" + scanner_name + "]</i> Fahrzeug lokalisiert</b>\r\n" + messageList)
-                if json['data']['unverified']:
-                    messageList = ""
-                    for vehicle in json['data']['unverified']:
-                        messageList += "- " + str(vehicle) + "\r\n";
-                    message(
-                        "<b><i>[" + scanner_name + "]</i> Unverifiziertes Fahrzeug lokalisiert</b>\r\n" + messageList)
-            except Exception as e:
+            except Exception:
                 print("Error on save. Retry.")
                 q.put(uploadData)
 
