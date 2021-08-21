@@ -18,7 +18,7 @@ scanning_interface = config['SCAN']['wifi_interface']
 token = config['SERVER']['token']
 
 
-def verbose(thread, message):
+def log(thread, message):
     if verbose == "true":
         print(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + " [" + thread + "]: " + message)
 
@@ -31,7 +31,7 @@ def saveThread(q):
             try:
                 response = requests.post('https://' + core_instance + '/api/v1/scan', json=uploadData,
                                          headers={'Authentication': token})
-                verbose("SaveScan", response.text)
+                log("SaveScan", response.text)
             except Exception:
                 print("Error on save. Retry.")
                 q.put(uploadData)
@@ -71,12 +71,12 @@ found = []
 while True:
     i += 1
     if i > 60 * 10:
-        verbose("Main", "Laufzeit erreicht.")
+        log("Main", "Laufzeit erreicht.")
         i = 1
         found = []
     try:
         cells = Cell.all(scanning_interface)
-        verbose("Main", "Scan... (" + str(qHandle.qsize()) + " Scans zu verarbeiten, )")
+        log("Main", "Scan... (" + str(qHandle.qsize()) + " Scans zu verarbeiten, )")
         qHandle.put(cells)
         time.sleep(0.2)
     except Exception as e:
