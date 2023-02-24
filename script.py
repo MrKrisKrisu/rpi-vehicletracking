@@ -103,7 +103,7 @@ found = []
 while True:
     i += 1
     if i > 60 * 10:
-        log("Main", "Laufzeit erreicht.")
+        log("Main", "Runtime reached; Resetting list of networks")
         i = 1
         found = []
     try:
